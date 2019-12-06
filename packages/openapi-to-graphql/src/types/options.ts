@@ -27,7 +27,9 @@ export type Report = {
 }
 
 export interface selectQueryOrMutationFieldType {
-  [title: string]: { [path: string]: { [type: string]: GraphQLOperationType } }
+  [title: string]: {
+    [path: string]: { [method: string]: GraphQLOperationType }
+  }
 }
 
 export type Options = {
@@ -78,6 +80,18 @@ export type Options = {
    */
   idFormats?: string[]
 
+  /**
+   * Allows to define the root operation type (Query or Mutation type) of any
+   * OAS operation explicitly.
+   *
+   * OtG will by default make all GET operations Query fields and everything
+   * else into Mutation fields.
+   *
+   * The field is identifed first by the title of the OAS, then the path of the
+   * operation.
+   */
+  selectQueryOrMutationField?: selectQueryOrMutationFieldType
+
   // Resolver options
 
   /**
@@ -121,17 +135,6 @@ export type Options = {
   customResolvers?: {
     [title: string]: { [path: string]: { [method: string]: ResolveFunction } }
   }
-
-  /**
-   * Allows to define the root operation type of any OAS operation explicitly.
-   * This will froce OtG to handle the given operation as Mutation or Query,
-   * instead of determining its type automatically.
-   *
-   * The field is identifed first by the title of the OAS, then the path of the
-   * operation.
-   *
-   */
-  selectQueryOrMutationField?: selectQueryOrMutationFieldType
 
   // Authentication options
 
@@ -231,6 +234,18 @@ export type InternalOptions = {
    */
   idFormats?: string[]
 
+  /**
+   * Allows to define the root operation type (Query or Mutation type) of any
+   * OAS operation explicitly.
+   *
+   * OtG will by default make all GET operations Query fields and everything
+   * else into Mutation fields.
+   *
+   * The field is identifed first by the title of the OAS, then the path of the
+   * operation.
+   */
+  selectQueryOrMutationField?: selectQueryOrMutationFieldType
+
   // Resolver options
 
   /**
@@ -274,17 +289,6 @@ export type InternalOptions = {
   customResolvers?: {
     [title: string]: { [path: string]: { [method: string]: ResolveFunction } }
   }
-
-  /**
-   * Allows to define the root operation type of any OAS operation explicitly.
-   * This will froce OtG to handle the given operation as Mutation or Query,
-   * instead of determining its type automatically.
-   *
-   * The field is identifed first by the title of the OAS, then the path of the
-   * operation.
-   *
-   */
-  selectQueryOrMutationField?: selectQueryOrMutationFieldType
 
   // Authentication options
 
