@@ -156,6 +156,8 @@ Schema options:
 
 - `idFormats` (type: `string[]`): If a schema is of type string and has format UUID, it will be translated into a [GraphQL ID type](https://graphql.org/graphql-js/type/#graphqlid). To allow for more customzation, this option allows users to specify other formats that should be interpreted as ID types. 
 
+- `selectQueryOrMutationField` (type: `object`, default: `{}`): OpenAPI-to-GraphQL, by default, will make all GET operations into `Query` fields and all other operations into `Mutation` fields. This option allows users to manually override this process. 
+
 ***
 
 Resolver options:

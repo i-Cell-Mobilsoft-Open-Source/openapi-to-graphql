@@ -13,8 +13,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const graphql_1 = require("./types/graphql");
-const graphql_2 = require("graphql");
+const graphql_1 = require("graphql");
 // Imports:
 const schema_builder_1 = require("./schema_builder");
 const resolver_builder_1 = require("./resolver_builder");
@@ -101,9 +100,9 @@ exports.createGraphQlSchema = createGraphQlSchema;
  */
 function translateOpenApiToGraphQL(oass, { strict, report, 
 // Schema options
-operationIdFieldNames, fillEmptyResponses, addLimitArgument, idFormats, 
+operationIdFieldNames, fillEmptyResponses, addLimitArgument, idFormats, selectQueryOrMutationField, 
 // Resolver options
-headers, qs, requestOptions, baseUrl, customResolvers, selectQueryOrMutationField, 
+headers, qs, requestOptions, baseUrl, customResolvers, 
 // Authentication options
 viewer, tokenJSONpath, sendOAuthTokenInQuery, 
 // Logging options
@@ -158,9 +157,7 @@ provideErrorExtensions, equivalentToMessages }) {
             .forEach(([operationId, operation]) => {
             translationLog(`Process operation '${operationId}'...`);
             let field = getFieldForOperation(operation, options.baseUrl, data, requestOptions);
-            if (isOperationTypeEnforced(operation, options.selectQueryOrMutationField)) {
-                operation.isMutation = !operation.isMutation;
-            }
+            // Check if the operation should be added as a Query or Mutation field
             if (!operation.isMutation) {
                 let fieldName = Oas3Tools.uncapitalize(operation.responseDefinition.otName);
                 if (operation.inViewer) {
@@ -304,14 +301,14 @@ provideErrorExtensions, equivalentToMessages }) {
          */
         const schemaConfig = {
             query: Object.keys(queryFields).length > 0
-                ? new graphql_2.GraphQLObjectType({
+                ? new graphql_1.GraphQLObjectType({
                     name: 'Query',
                     description: 'The start of any query',
                     fields: queryFields
                 })
                 : GraphQLTools.getEmptyObjectType('query'),
             mutation: Object.keys(mutationFields).length > 0
-                ? new graphql_2.GraphQLObjectType({
+                ? new graphql_1.GraphQLObjectType({
                     name: 'Mutation',
                     description: 'The start of any mutation',
                     fields: mutationFields
@@ -329,7 +326,7 @@ provideErrorExtensions, equivalentToMessages }) {
                 operation.responseDefinition.ot = GraphQLTools.getEmptyObjectType(operation.responseDefinition.otName);
             }
         });
-        const schema = new graphql_2.GraphQLSchema(schemaConfig);
+        const schema = new graphql_1.GraphQLSchema(schemaConfig);
         return { schema, report: options.report };
     });
 }
@@ -411,23 +408,6 @@ function sortOperations(op1, op2) {
     }
 }
 /**
- * Checks whether the type of a given operation should be overridden or not.
- * If the op is listed in selectQueryOrMutationField, its type (mutation or query) will be
- * determined using the type definition in selectQueryOrMutationField.
- *
- */
-function isOperationTypeEnforced(operation, selectQueryOrMutationField) {
-    const title = operation.oas.info.title;
-    if (!selectQueryOrMutationField || !selectQueryOrMutationField[title]) {
-        return false;
-    }
-    const paths = Object.keys(selectQueryOrMutationField[title]);
-    return paths.findIndex((path) => {
-        const opType = selectQueryOrMutationField[title][path].type;
-        return path === operation.path && opType === (operation.isMutation ? graphql_1.GraphQLOperationType.Query : graphql_1.GraphQLOperationType.Mutation);
-    }) !== -1;
-}
-/**
  * Ensures that the options are valid
  */
 function preliminaryChecks(options, data) {
@@ -492,4 +472,6 @@ function preliminaryChecks(options, data) {
 }
 var oas_3_tools_1 = require("./oas_3_tools");
 exports.sanitize = oas_3_tools_1.sanitize;
+var graphql_2 = require("./types/graphql");
+exports.GraphQLOperationType = graphql_2.GraphQLOperationType;
 //# sourceMappingURL=index.js.map
